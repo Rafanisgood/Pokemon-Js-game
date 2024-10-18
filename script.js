@@ -12,27 +12,38 @@ image.src = './images/whale village.png';
 const playerImage = new Image();
 playerImage.src = 'images/playerDown.png';
 
-function draw() {
-    if (image.complete) {
-        c.drawImage(image, -510, -640);
-    }
+let imagesLoaded = 0;
 
-    if (playerImage.complete) {
+//the function for drawing both images and character
+function draw() {
+    if (imagesLoaded === 2) //only draw when both images are loaded
+    {        
+        c.drawImage(image, -510, -640);
         c.drawImage(
             playerImage,
             0, 0,
-            playerImage.width / 4,
+            playerImage.width / 4,   
             playerImage.height,
             canvas.width / 2 - playerImage.width / 4 / 2,
             canvas.height / 2 - playerImage.height / 2,
             playerImage.width / 4,
             playerImage.height
-        ); 
+        );
     }
 }
 
-image.onload = draw;
-playerImage.onload = draw;
+//here the issue was the character was being drawn before it was done loading completely. The browser doesnt wait for the character to load properly before drawing and that was the issue. sometimes the character loaded before getting drawn and sometimes it didnt.. here we are calling the draw function(draws the map and character) after the images are completely loaded(which is checked by image.onload)
+
+//onload is an event handler in js that runs right after the associated image is loaded completely
+image.onload = () => {
+    imagesLoaded += 1;
+    draw();
+};
+
+playerImage.onload = () => {
+    imagesLoaded += 1;
+    draw();
+};
 
 window.addEventListener('keydown', (e) => {
     console.log('go');
